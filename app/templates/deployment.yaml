@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "component.fullname" . }}
+  labels:
+    app: {{ include "component.fullname" . }}
+spec:
+  {{- if .Values.replicaCount  }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "component.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "component.fullname" . }}
+    spec:
+      containers:
+      - name: app
+        image: "{{ .Values.image.repository }}"
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: content
+      volumes:
+      - name: content
+        configMap:
+          name: {{ include "component.fullname" . }}
+        
